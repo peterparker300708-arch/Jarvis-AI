@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Tuple
 
@@ -60,7 +60,7 @@ def _err(message: str, status: int = 400) -> Tuple[Any, int]:
 @api_bp.route("/api/health", methods=["GET"])
 def health():
     """Lightweight health-check — no authentication required."""
-    return _ok({"service": "Jarvis AI", "healthy": True, "timestamp": datetime.utcnow().isoformat()})
+    return _ok({"service": "Jarvis AI", "healthy": True, "timestamp": datetime.now(timezone.utc).isoformat()})
 
 
 @api_bp.route("/api/status", methods=["GET"])
@@ -123,6 +123,9 @@ def list_processes():
     except Exception as exc:
         logger.error("list_processes error: %s", exc)
         return _err("Unable to retrieve process list", 500)
+
+
+@api_bp.route("/api/process/kill", methods=["POST"])
 def kill_process():
     """Kill a process by PID or name.
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sqlite3
 import threading
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Dict, List, Optional
 
 from database.db_manager import get_db_manager
@@ -86,7 +86,7 @@ class CalendarManager:
                         end_time.isoformat() if end_time else None,
                         description,
                         location,
-                        datetime.utcnow().isoformat(),
+                        datetime.now(timezone.utc).isoformat(),
                     ),
                 )
                 conn.commit()
@@ -117,7 +117,7 @@ class CalendarManager:
         Returns:
             List of event dicts sorted by start_time.
         """
-        start = date or datetime.utcnow()
+        start = date or datetime.now(timezone.utc)
         end = start + timedelta(days=days_ahead)
 
         with self._lock:

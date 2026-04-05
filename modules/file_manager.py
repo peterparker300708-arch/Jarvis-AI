@@ -294,7 +294,7 @@ class FileManager:
         return moved
 
     def find_duplicates(self, directory: str) -> Dict[str, List[str]]:
-        """Find duplicate files under *directory* by MD5 hash.
+        """Find duplicate files under *directory* by SHA-256 hash.
 
         Returns:
             dict mapping hash -> list of duplicate file paths (only groups
@@ -306,7 +306,7 @@ class FileManager:
             if not item.is_file():
                 continue
             try:
-                h = self._md5(item)
+                h = self._sha256(item)
                 hashes.setdefault(h, []).append(str(item))
             except (PermissionError, OSError):
                 continue
@@ -406,7 +406,7 @@ class FileManager:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _md5(path: Path, chunk: int = 65536) -> str:
+    def _sha256(path: Path, chunk: int = 65536) -> str:
         h = hashlib.sha256()
         with path.open("rb") as fh:
             while True:

@@ -64,7 +64,7 @@ def create_app(api_key: Optional[str] = None, debug: bool = False) -> Flask:
         key = (
             request.headers.get(_API_KEY_HEADER)
             or request.args.get("api_key")
-            or request.json.get("api_key") if request.is_json else None
+            or (request.json.get("api_key") if request.is_json else None)
         )
         if key != app.config["JARVIS_API_KEY"]:
             return jsonify({"status": "error", "message": "Unauthorized — invalid or missing API key"}), 401
