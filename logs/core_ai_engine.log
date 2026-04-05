@@ -1,0 +1,3 @@
+2026-04-05 14:17:00,599 | [36m[1mDEBUG   [0m | [34mcore.ai_engine[0m | process_command:111 | Intent=time entities={} for: 'What time is it?'
+2026-04-05 14:17:00,600 | [36m[1mDEBUG   [0m | [34mcore.ai_engine[0m | process_command:111 | Intent=joke entities={} for: 'Tell me a joke'
+2026-04-05 14:17:00,600 | [36m[1mDEBUG   [0m | [34mcore.ai_engine[0m | process_command:111 | Intent=calculator entities={'expression': '2+2'} for: 'Calculate 2+2'

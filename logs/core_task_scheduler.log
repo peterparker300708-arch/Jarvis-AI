@@ -1,0 +1,2 @@
+2026-04-05 14:17:00,706 | [32m[1mINFO    [0m | [34mcore.task_scheduler[0m | start:92 | Task scheduler started (timezone=UTC).
+2026-04-05 14:17:00,706 | [32m[1mINFO    [0m | [34mcore.task_scheduler[0m | stop:105 | Task scheduler stopped.

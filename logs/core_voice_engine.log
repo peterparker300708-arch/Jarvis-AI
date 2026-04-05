@@ -1,0 +1,2 @@
+2026-04-05 14:17:00,609 | [33m[1mWARNING [0m | [34mcore.voice_engine[0m | <module>:25 | speech_recognition not installed — voice input disabled.
+2026-04-05 14:17:00,609 | [33m[1mWARNING [0m | [34mcore.voice_engine[0m | <module>:42 | Neither pyttsx3 nor gTTS installed — TTS output disabled.
