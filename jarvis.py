@@ -190,7 +190,7 @@ class JarvisAI:
             ai_cfg = self._config.get("ai", {})
             self._ai = AIEngine(
                 model=ai_cfg.get("model", "mistral"),
-                base_url=ai_cfg.get("base_url", "http://localhost:11434"),
+                ollama_url=ai_cfg.get("base_url", "http://localhost:11434"),
                 temperature=float(ai_cfg.get("temperature", 0.7)),
                 max_tokens=int(ai_cfg.get("max_tokens", 2000)),
             )
@@ -271,7 +271,8 @@ class JarvisAI:
         # Route through AI engine
         if self._ai is not None:
             try:
-                response = self._ai.process(text)
+                result = self._ai.process_command(text)
+                response = result.get("response", "") if isinstance(result, dict) else str(result)
                 if response:
                     return response
             except Exception as exc:  # noqa: BLE001

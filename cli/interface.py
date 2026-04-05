@@ -306,7 +306,7 @@ class JarvisCLI(cmd.Cmd):
             try:
                 from database.db_manager import DatabaseManager  # type: ignore[import]
                 db = DatabaseManager()
-                db.create_note(title=title, content=content)
+                db.add_note(title=title, content=content)
                 self._info(f"Note '{title}' saved.")
             except Exception as exc:  # noqa: BLE001
                 self._error(f"Could not save note: {exc}")
@@ -326,7 +326,15 @@ class JarvisCLI(cmd.Cmd):
             if not notes:
                 self._info("No notes saved yet.")
                 return
-            rows = [[str(n.id), n.title, (n.content or "")[:40], str(n.created_at)[:16]] for n in notes]
+            rows = [
+                [
+                    str(n.get("note_id", "")),
+                    n.get("title", ""),
+                    (n.get("content") or "")[:40],
+                    str(n.get("created_at", ""))[:16],
+                ]
+                for n in notes
+            ]
             _table(["ID", "Title", "Content (preview)", "Created"], rows, [5, 24, 42, 17])
         except Exception as exc:  # noqa: BLE001
             self._error(f"Could not retrieve notes: {exc}")
@@ -349,8 +357,14 @@ class JarvisCLI(cmd.Cmd):
         else:
             try:
                 from database.db_manager import DatabaseManager  # type: ignore[import]
+                from datetime import datetime as _dt
+                from dateutil import parser as _dp  # type: ignore[import]
                 db = DatabaseManager()
-                db.create_reminder(title=title, reminder_time=remind_time, message=message)
+                try:
+                    remind_dt = _dp.parse(remind_time)
+                except Exception:  # noqa: BLE001
+                    remind_dt = _dt.now()
+                db.add_reminder(title=title, message=message, remind_at=remind_dt)
                 self._info(f"Reminder '{title}' set for {remind_time}.")
             except Exception as exc:  # noqa: BLE001
                 self._error(f"Could not set reminder: {exc}")
@@ -366,12 +380,17 @@ class JarvisCLI(cmd.Cmd):
         try:
             from database.db_manager import DatabaseManager  # type: ignore[import]
             db = DatabaseManager()
-            reminders = db.get_reminders()
+            reminders = db.get_all_reminders(include_completed=True)
             if not reminders:
                 self._info("No reminders set.")
                 return
             rows = [
-                [str(r.id), r.title, str(r.reminder_time)[:16], (r.message or "")[:30]]
+                [
+                    str(r.get("reminder_id", "")),
+                    r.get("title", ""),
+                    str(r.get("remind_at", ""))[:16],
+                    (r.get("message") or "")[:30],
+                ]
                 for r in reminders
             ]
             _table(["ID", "Title", "Time", "Message"], rows, [5, 22, 18, 32])

@@ -145,7 +145,7 @@ def create_dashboard_app(
                 return jsonify({"command": command, "response": result, "timestamp": time.time()})
             except Exception as exc:  # noqa: BLE001
                 logger.exception("Command execution error: %s", exc)
-                return jsonify({"error": str(exc)}), 500
+                return jsonify({"error": "Command execution failed"}), 500
         else:
             # Standalone mode: echo back with a note
             return jsonify(

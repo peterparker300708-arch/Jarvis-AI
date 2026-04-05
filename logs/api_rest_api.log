@@ -3,3 +3,17 @@
 2026-04-05 14:26:27,972 | [32m[1mINFO    [0m | [34mapi.rest_api[0m | create_app:115 | Jarvis REST API app created (debug=False)
 2026-04-05 14:26:27,976 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | DELETE /api/files 403 0.2ms
 2026-04-05 14:26:27,977 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | GET /api/health 200 0.1ms
+2026-04-05 14:28:19,907 | [32m[1mINFO    [0m | [34mapi.rest_api[0m | create_app:115 | Jarvis REST API app created (debug=False)
+2026-04-05 14:28:19,911 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | GET /api/health 200 0.1ms
+2026-04-05 14:28:19,933 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | POST /api/process/kill 404 21.1ms
+2026-04-05 14:28:19,933 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | GET /api/files 401 0.1ms
+2026-04-05 14:28:28,443 | [32m[1mINFO    [0m | [34mapi.rest_api[0m | create_app:115 | Jarvis REST API app created (debug=False)
+2026-04-05 14:28:28,447 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | GET /api/health 200 0.1ms
+2026-04-05 14:28:28,468 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | POST /api/process/kill 404 20.8ms
+2026-04-05 14:28:28,469 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | GET /api/files 401 0.0ms
+2026-04-05 14:28:59,990 | [32m[1mINFO    [0m | [34mapi.rest_api[0m | create_app:115 | Jarvis REST API app created (debug=False)
+2026-04-05 14:28:59,994 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | GET /api/health 200 0.1ms
+2026-04-05 14:29:00,016 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | POST /api/process/kill 404 21.1ms
+2026-04-05 14:29:00,017 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | GET /api/files 403 0.2ms
+2026-04-05 14:29:00,018 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | GET /api/files 200 1.1ms
+2026-04-05 14:29:00,019 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | GET /api/status 401 0.1ms
