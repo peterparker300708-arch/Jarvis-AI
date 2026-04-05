@@ -379,9 +379,7 @@ class JarvisAI:
 
         print(_c(f"  Starting REST API → http://{host}:{port}/", _C.CYAN))
         from api.rest_api import create_app
-        from api.routes import register_routes
         app = create_app(api_key=api_key or None, debug=debug)
-        register_routes(app)
         app.run(host=host, port=port, debug=debug, use_reloader=False, threaded=True)
 
     # -- Voice mode --

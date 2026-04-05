@@ -17,7 +17,7 @@ def db():
 
 def test_log_command(db):
     db.log_command("test command", "test response", True)
-    history = db.get_command_history(limit=1)
+    history = db.get_recent_commands(limit=1)
     assert len(history) == 1
     assert history[0]['command_text'] == "test command"
 

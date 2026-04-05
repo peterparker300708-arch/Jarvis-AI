@@ -42,7 +42,9 @@ def test_search_files(fm, temp_dir):
     open(os.path.join(temp_dir, "image.png"), 'w').close()
     results = fm.search(temp_dir, "*.txt")
     assert len(results) >= 1
-    assert any("document.txt" in r for r in results)
+    # results is a list of dicts with 'name' and 'path' keys
+    names = [r['name'] if isinstance(r, dict) else r for r in results]
+    assert any("document.txt" in n for n in names)
 
 
 def test_get_file_info(fm, temp_dir):

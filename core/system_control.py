@@ -551,3 +551,63 @@ def _try_float(value: str, default: float = 0.0) -> float:
         return float(value)
     except (ValueError, TypeError):
         return default
+
+
+# ---------------------------------------------------------------------------
+# Convenience class wrapper
+# ---------------------------------------------------------------------------
+
+class SystemControl:
+    """Class wrapper around module-level system control functions."""
+
+    def execute_command(self, cmd: str, timeout: int = 30) -> tuple[str, str, int]:
+        result = execute_command(cmd, timeout)
+        return result.get("stdout", ""), result.get("stderr", ""), result.get("returncode", -1)
+
+    def get_running_processes(self, sort_by: str = "cpu", limit: int = 50) -> list[dict[str, Any]]:
+        return get_running_processes()
+
+    def kill_process(self, pid_or_name: int | str) -> dict[str, Any]:
+        return kill_process(pid_or_name)
+
+    def start_process(self, cmd: str) -> dict[str, Any]:
+        return start_process(cmd)
+
+    def get_system_info(self) -> dict[str, Any]:
+        return get_system_info()
+
+    def get_cpu_info(self) -> dict[str, Any]:
+        return get_cpu_info()
+
+    def get_memory_info(self) -> dict[str, Any]:
+        return get_memory_info()
+
+    def get_disk_info(self) -> list[dict[str, Any]]:
+        return get_disk_info()
+
+    def get_network_info(self) -> dict[str, Any]:
+        return get_network_info()
+
+    def set_volume(self, level: int) -> dict[str, Any]:
+        return set_volume(level)
+
+    def get_volume(self) -> int:
+        return get_volume()
+
+    def lock_screen(self) -> dict[str, Any]:
+        return lock_screen()
+
+    def shutdown(self, delay: int = 0) -> dict[str, Any]:
+        return shutdown(delay)
+
+    def restart(self, delay: int = 0) -> dict[str, Any]:
+        return restart(delay)
+
+    def sleep_system(self) -> dict[str, Any]:
+        return sleep_system()
+
+    def open_file(self, path: str) -> dict[str, Any]:
+        return open_file(path)
+
+    def get_environment_vars(self) -> dict[str, str]:
+        return get_environment_vars()
