@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JARVIS AI – Dashboard</title>
+
+  <!-- Bootstrap 5 dark theme base (CDN) -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+    crossorigin="anonymous"
+  />
+  <!-- Custom dashboard styles -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<!-- Animated scan-line overlay -->
+<div class="scanline-overlay"></div>
+
+<div class="dashboard-wrapper">
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="dashboard-header">
+    <div class="header-logo">
+      <div class="logo-icon">🤖</div>
+      <div>
+        <h1>JARVIS</h1>
+        <div class="subtitle">AI Control Interface v1.0</div>
+      </div>
+    </div>
+
+    <div class="header-status">
+      <div class="status-dot"></div>
+      <span>ONLINE</span>
+      &nbsp;|&nbsp;
+      <span id="current-time">00:00:00</span>
+      &nbsp;|&nbsp;
+      <span id="last-updated" style="color:var(--text-muted);font-size:11px"></span>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       STAT CARDS ROW
+       ============================================================ -->
+  <div class="stats-grid">
+
+    <!-- CPU -->
+    <div class="card stat-card">
+      <div class="card-header">
+        <span class="card-title">CPU Usage</span>
+        <span class="card-icon">⚡</span>
+      </div>
+      <div class="stat-value" id="cpu-value">0.0%</div>
+      <div class="stat-label">Processor Load</div>
+      <div class="stat-sub" id="cpu-sub">– cores</div>
+      <div class="progress-wrap">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="cpu-bar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Memory -->
+    <div class="card stat-card">
+      <div class="card-header">
+        <span class="card-title">Memory</span>
+        <span class="card-icon">🧠</span>
+      </div>
+      <div class="stat-value" id="mem-value">0.0%</div>
+      <div class="stat-label">RAM Usage</div>
+      <div class="stat-sub" id="mem-sub">– / –</div>
+      <div class="progress-wrap">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="mem-bar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disk -->
+    <div class="card stat-card">
+      <div class="card-header">
+        <span class="card-title">Disk</span>
+        <span class="card-icon">💾</span>
+      </div>
+      <div class="stat-value" id="disk-value">0.0%</div>
+      <div class="stat-label">Storage Used</div>
+      <div class="stat-sub" id="disk-sub">– / –</div>
+      <div class="progress-wrap">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="disk-bar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Uptime -->
+    <div class="card stat-card">
+      <div class="card-header">
+        <span class="card-title">Uptime</span>
+        <span class="card-icon">🕐</span>
+      </div>
+      <div
+        class="stat-value"
+        id="uptime-value"
+        style="font-size:20px;margin-top:4px;color:var(--success)"
+      >
+        {{ stats.uptime if stats else 'N/A' }}
+      </div>
+      <div class="stat-label">System Running Time</div>
+      <div class="stat-sub" style="margin-top:14px">
+        &nbsp;<!-- spacer to align with other cards -->
+      </div>
+      <!-- Network mini-stats -->
+      <div style="margin-top:10px">
+        <div class="net-row">
+          <span class="net-label">↑ Sent</span>
+          <span class="net-value" id="net-sent">–</span>
+        </div>
+        <div class="net-row">
+          <span class="net-label">↓ Recv</span>
+          <span class="net-value" id="net-recv">–</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /stats-grid -->
+
+  <!-- ============================================================
+       MAIN CONTENT GRID
+       ============================================================ -->
+  <div class="main-grid">
+
+    <!-- Command Console -->
+    <div class="card console-card">
+      <div class="card-header">
+        <span class="card-title">Command Console</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" id="clear-btn" style="padding:4px 10px;font-size:11px">
+            CLEAR
+          </button>
+        </div>
+      </div>
+
+      <div class="console-output" id="console-output" aria-live="polite">
+        <!-- Populated by dashboard.js -->
+      </div>
+
+      <div class="console-input-wrap">
+        <span class="prompt">JARVIS&gt;</span>
+        <input
+          type="text"
+          id="cmd-input"
+          placeholder="Enter command… (e.g. status, weather London, chat hello)"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Command input"
+        />
+        <button class="btn btn-primary" id="send-btn">SEND</button>
+      </div>
+
+      <!-- Quick-command chips -->
+      <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px">
+        {% for cmd in ['status', 'processes', 'help', 'chat hello'] %}
+        <button
+          class="btn btn-secondary"
+          style="padding:3px 10px;font-size:10px;letter-spacing:0.5px"
+          onclick="document.getElementById('cmd-input').value='{{ cmd }}'"
+        >{{ cmd }}</button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Process Table -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Top Processes</span>
+        <span class="card-icon" style="font-size:14px;color:var(--text-muted)">
+          ↻ auto-refresh
+        </span>
+      </div>
+
+      <div class="process-table-wrap">
+        <table class="process-table" aria-label="Running processes">
+          <thead>
+            <tr>
+              <th>PID</th>
+              <th>Name</th>
+              <th>CPU %</th>
+              <th>MEM %</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="process-tbody">
+            <tr>
+              <td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px">
+                <span class="loading"></span> Loading…
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /main-grid -->
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="dashboard-footer">
+    JARVIS AI &nbsp;·&nbsp; v1.0.0 &nbsp;·&nbsp;
+    Built with Flask &amp; ❤️ &nbsp;·&nbsp;
+    <span id="footer-time"></span>
+  </footer>
+
+</div><!-- /dashboard-wrapper -->
+
+<!-- Bootstrap JS bundle -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+  crossorigin="anonymous"
+></script>
+
+<!-- Dashboard logic -->
+<script src="/static/js/dashboard.js"></script>
+
+<script>
+  // Footer timestamp
+  document.getElementById("footer-time").textContent = new Date().toLocaleString();
+</script>
+</body>
+</html>
