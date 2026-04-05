@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Jarvis AI - Terminal</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="dark-theme">
+<nav class="navbar">
+  <div class="brand">🤖 Jarvis AI <span class="version">v2.0</span></div>
+  <ul class="nav-links">
+    <li><a href="/">Dashboard</a></li>
+    <li><a href="/terminal" class="active">Terminal</a></li>
+    <li><a href="/analytics">Analytics</a></li>
+    <li><a href="/settings">Settings</a></li>
+  </ul>
+</nav>
+<main class="container">
+  <h2>⌨️ Jarvis Terminal</h2>
+  <div class="terminal-box" id="terminal-output"></div>
+  <div class="terminal-input-row">
+    <span class="prompt">jarvis@ai:~$ </span>
+    <input type="text" id="terminal-input" placeholder="Enter command..." autocomplete="off">
+  </div>
+</main>
+<script src="/static/js/terminal.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Jarvis AI - Analytics</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="dark-theme">
+<nav class="navbar">
+  <div class="brand">🤖 Jarvis AI <span class="version">v2.0</span></div>
+  <ul class="nav-links">
+    <li><a href="/">Dashboard</a></li>
+    <li><a href="/terminal">Terminal</a></li>
+    <li><a href="/analytics" class="active">Analytics</a></li>
+    <li><a href="/settings">Settings</a></li>
+  </ul>
+</nav>
+<main class="container">
+  <h2>📊 Analytics &amp; Reports</h2>
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-icon">📈</div>
+      <div class="card-value" id="total-commands">--</div>
+      <div class="card-label">Total Commands</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">✅</div>
+      <div class="card-value" id="success-rate">--</div>
+      <div class="card-label">Success Rate</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">⏱️</div>
+      <div class="card-value" id="session-time">--</div>
+      <div class="card-label">Session Minutes</div>
+    </div>
+  </div>
+
+  <section>
+    <h3>Top Command Categories</h3>
+    <div id="categories-chart"></div>
+    <table id="categories-table">
+      <thead><tr><th>Category</th><th>Count</th></tr></thead>
+      <tbody id="categories-tbody"></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>Recent Commands</h3>
+    <table id="history-table">
+      <thead><tr><th>Time</th><th>Command</th><th>Category</th><th>Status</th></tr></thead>
+      <tbody id="history-tbody"></tbody>
+    </table>
+  </section>
+</main>
+<script src="/static/js/analytics.js"></script>
+</body>
+</html>

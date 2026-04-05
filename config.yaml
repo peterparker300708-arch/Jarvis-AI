@@ -1,0 +1,131 @@
+# Jarvis AI - Advanced Configuration
+# =====================================
+
+app:
+  name: "Jarvis AI"
+  version: "2.0.0"
+  debug: false
+  log_level: "INFO"
+  log_file: "logs/jarvis.log"
+
+# AI Engine
+ai:
+  provider: "ollama"          # ollama | openai | anthropic
+  model: "mistral"            # mistral | llama2 | llama3 | gpt-4 | claude-3
+  fallback_model: "llama2"
+  base_url: "http://localhost:11434"
+  temperature: 0.7
+  max_tokens: 2048
+  context_window: 8192
+  timeout: 30
+
+# NLU Engine
+nlu:
+  language: "en"
+  confidence_threshold: 0.85
+  entity_extraction: true
+  coreference_resolution: true
+  semantic_similarity: true
+
+# Voice
+voice:
+  enabled: true
+  engine: "pyttsx3"           # pyttsx3 | elevenlabs | gtts
+  recognition_engine: "google" # google | sphinx | whisper
+  wake_word: "jarvis"
+  language: "en-US"
+  rate: 180
+  volume: 1.0
+  personality: "jarvis"       # jarvis | friday | edith | custom
+
+# Emotion Detection
+emotion:
+  enabled: true
+  adapt_responses: true
+  sensitivity: 0.7
+
+# Memory
+memory:
+  max_turns: 50
+  persistence: true
+  db_path: "database/jarvis.db"
+  long_term_enabled: true
+  recall_threshold: 0.75
+
+# Web Dashboard
+web:
+  host: "0.0.0.0"
+  port: 5000
+  secret_key: "change-this-in-production"
+  debug: false
+
+# REST API
+api:
+  host: "0.0.0.0"
+  port: 8000
+  rate_limit: 100             # requests per minute
+  auth_enabled: false
+  api_key: ""
+
+# Database
+database:
+  path: "database/jarvis.db"
+  backup_enabled: true
+  backup_interval: 86400      # seconds (24 hours)
+
+# Notifications
+notifications:
+  desktop_enabled: true
+  email_enabled: false
+  telegram_enabled: false
+  smtp_host: ""
+  smtp_port: 587
+  smtp_user: ""
+  smtp_password: ""
+  telegram_bot_token: ""
+  telegram_chat_id: ""
+
+# Scheduling
+scheduler:
+  enabled: true
+  timezone: "UTC"
+  max_jobs: 100
+
+# Web Scraping
+scraping:
+  user_agent: "Mozilla/5.0 (compatible; JarvisBot/2.0)"
+  timeout: 30
+  max_retries: 3
+  delay_between_requests: 1.0
+
+# Analytics
+analytics:
+  enabled: true
+  retention_days: 90
+  reports_dir: "reports"
+
+# Optimization
+optimization:
+  gpu_enabled: false          # requires CUDA
+  cache_enabled: true
+  cache_ttl: 3600             # seconds
+  max_workers: 4
+  batch_size: 32
+
+# Paths
+paths:
+  downloads: "~/Downloads"
+  screenshots: "~/Pictures/Jarvis"
+  pdfs: "~/Documents/PDFs"
+  reports: "reports"
+  logs: "logs"
+  models: "models"
+
+# Themes
+ui:
+  default_theme: "dark"
+  available_themes:
+    - "dark"
+    - "light"
+    - "iron-man"
+    - "matrix"
