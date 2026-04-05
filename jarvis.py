@@ -96,9 +96,10 @@ def run_web(config: Config, components: dict, host: str, port: int):
     """Run web dashboard."""
     app = create_dashboard_app(config, components)
     port = port or config.get("web.port", 5000)
+    debug_mode = config.get("web.debug", False) and getattr(config, "debug", False)
     logger = logging.getLogger("jarvis")
     logger.info(f"Starting web dashboard on http://{host}:{port}")
-    app.run(host=host, port=port, debug=config.debug)
+    app.run(host=host, port=port, debug=debug_mode)
 
 
 def run_api(config: Config, components: dict, host: str, port: int):
