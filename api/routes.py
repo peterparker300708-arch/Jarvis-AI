@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
-from typing import Any, Dict, Tuple
+from pathlib import Path
+from typing import Any, Tuple
 
 from flask import Blueprint, jsonify, request
 
@@ -16,6 +17,25 @@ logger = get_logger(__name__)
 api_bp = Blueprint("api", __name__)
 
 _db = None
+
+# Allowed root for file-system API operations (restrict to user home)
+_FS_ROOT = Path(os.path.expanduser("~")).resolve()
+
+
+def _validate_path(path: str) -> Path:
+    """Resolve *path* and ensure it does not escape the allowed filesystem root.
+
+    Raises:
+        PermissionError: If the resolved path is outside :data:`_FS_ROOT`.
+    """
+    resolved = Path(path).expanduser().resolve()
+    try:
+        resolved.relative_to(_FS_ROOT)
+    except ValueError:
+        raise PermissionError(
+            f"Access denied: path is outside the permitted directory ({_FS_ROOT})"
+        )
+    return resolved
 
 
 def _get_db():
@@ -53,7 +73,7 @@ def status():
         return _ok(snapshot)
     except Exception as exc:
         logger.error("Status endpoint error: %s", exc)
-        return _err(str(exc), 500)
+        return _err("Unable to retrieve system status", 500)
 
 
 # ======================================================================
@@ -77,7 +97,8 @@ def execute_command():
     try:
         from core.ai_engine import AIEngine  # noqa: PLC0415
         engine = AIEngine()
-        response_text = engine.process(command_text)
+        result = engine.process_command(command_text)
+        response_text = result.get("response", str(result))
     except Exception as exc:
         logger.debug("AIEngine not available, using echo response: %s", exc)
 
@@ -100,10 +121,8 @@ def list_processes():
         processes = monitor.get_processes(sort_by=sort_by, limit=limit)
         return _ok(processes)
     except Exception as exc:
-        return _err(str(exc), 500)
-
-
-@api_bp.route("/api/process/kill", methods=["POST"])
+        logger.error("list_processes error: %s", exc)
+        return _err("Unable to retrieve process list", 500)
 def kill_process():
     """Kill a process by PID or name.
 
@@ -141,7 +160,8 @@ def kill_process():
     except ImportError:
         return _err("psutil not available", 500)
     except Exception as exc:
-        return _err(str(exc), 500)
+        logger.error("kill_process error: %s", exc)
+        return _err("Unable to kill process", 500)
 
 
 # ======================================================================
@@ -154,16 +174,20 @@ def list_files():
 
     Query param: path= (defaults to user home)
     """
-    path = request.args.get("path", os.path.expanduser("~"))
+    raw_path = request.args.get("path", os.path.expanduser("~"))
     try:
+        safe_path = _validate_path(raw_path)
         from modules.file_manager import FileManager  # noqa: PLC0415
         fm = FileManager()
-        entries = fm.list_directory(path)
-        return _ok({"path": path, "entries": entries})
-    except FileNotFoundError as exc:
-        return _err(str(exc), 404)
+        entries = fm.list_directory(str(safe_path))
+        return _ok({"path": str(safe_path), "entries": entries})
+    except PermissionError as exc:
+        return _err(str(exc), 403)
+    except FileNotFoundError:
+        return _err("Directory not found", 404)
     except Exception as exc:
-        return _err(str(exc), 500)
+        logger.error("list_files error: %s", exc)
+        return _err("Unable to list directory", 500)
 
 
 @api_bp.route("/api/files", methods=["POST"])
@@ -173,23 +197,27 @@ def create_file_or_dir():
     Body JSON: {"path": "/some/path", "type": "file"|"directory", "content": "..."}
     """
     body = request.get_json(silent=True) or {}
-    path = body.get("path", "")
+    raw_path = body.get("path", "")
     item_type = body.get("type", "file")
     content = body.get("content", "")
 
-    if not path:
+    if not raw_path:
         return _err("'path' is required")
 
     try:
+        safe_path = _validate_path(raw_path)
         from modules.file_manager import FileManager  # noqa: PLC0415
         fm = FileManager()
         if item_type == "directory":
-            result = fm.create_directory(path)
+            result = fm.create_directory(str(safe_path))
         else:
-            result = fm.create_file(path, content)
+            result = fm.create_file(str(safe_path), content)
         return _ok({"created": result, "type": item_type}, 201)
+    except PermissionError as exc:
+        return _err(str(exc), 403)
     except Exception as exc:
-        return _err(str(exc), 500)
+        logger.error("create_file error: %s", exc)
+        return _err("Unable to create file or directory", 500)
 
 
 @api_bp.route("/api/files", methods=["DELETE"])
@@ -199,21 +227,25 @@ def delete_file():
     Body JSON: {"path": "/some/path", "recycle": true}
     """
     body = request.get_json(silent=True) or {}
-    path = body.get("path", "")
+    raw_path = body.get("path", "")
     recycle = body.get("recycle", True)
 
-    if not path:
+    if not raw_path:
         return _err("'path' is required")
 
     try:
+        safe_path = _validate_path(raw_path)
         from modules.file_manager import FileManager  # noqa: PLC0415
         fm = FileManager()
-        fm.delete(path, recycle=recycle)
-        return _ok({"deleted": path})
-    except FileNotFoundError as exc:
-        return _err(str(exc), 404)
+        fm.delete(str(safe_path), recycle=recycle)
+        return _ok({"deleted": str(safe_path)})
+    except PermissionError as exc:
+        return _err(str(exc), 403)
+    except FileNotFoundError:
+        return _err("File not found", 404)
     except Exception as exc:
-        return _err(str(exc), 500)
+        logger.error("delete_file error: %s", exc)
+        return _err("Unable to delete file", 500)
 
 
 # ======================================================================

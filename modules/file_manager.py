@@ -407,7 +407,7 @@ class FileManager:
 
     @staticmethod
     def _md5(path: Path, chunk: int = 65536) -> str:
-        h = hashlib.md5()
+        h = hashlib.sha256()
         with path.open("rb") as fh:
             while True:
                 data = fh.read(chunk)

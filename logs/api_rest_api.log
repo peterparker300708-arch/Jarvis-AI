@@ -1,0 +1,2 @@
+2026-04-05 14:24:05,484 | [32m[1mINFO    [0m | [34mapi.rest_api[0m | create_app:115 | Jarvis REST API app created (debug=False)
+2026-04-05 14:24:05,488 | [36m[1mDEBUG   [0m | [34mapi.rest_api[0m | _log_request:76 | GET /api/health 200 0.1ms
