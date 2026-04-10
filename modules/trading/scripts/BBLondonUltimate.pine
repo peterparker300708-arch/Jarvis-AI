@@ -1,0 +1,111 @@
+//@version=5
+// ============================================================
+// BB (20,3) London Scalp – Ultimate Edition
+// Instrument : EUR/USD
+// Timeframe  : 15 minutes (M15)
+// Account    : $10,000  |  Lot size: 1.0 standard lot(s)
+// ============================================================
+strategy(
+     title             = "BB (20,3.0) London Scalp – Ultimate",
+     overlay           = true,
+     initial_capital   = 10000,
+     default_qty_type  = strategy.fixed,
+     default_qty_value = 100000,
+     currency          = currency.USD
+)
+
+// ──────────────────────────────────────────────────────────────
+// INPUTS
+// ──────────────────────────────────────────────────────────────
+bb_length    = input.int(20,   title = "BB Length")
+bb_mult      = input.float(3.0,  title = "BB StdDev Multiplier", step = 0.1)
+rsi_length   = input.int(14,  title = "RSI Length")
+rsi_os       = input.float(30.0,  title = "RSI Oversold Level")
+rsi_ob       = input.float(70.0,  title = "RSI Overbought Level")
+ema_length   = input.int(200, title = "EMA Trend Filter Length")
+sl_pips      = input.float(10.0,  title = "Stop Loss (Pips)")
+session_time = input.session("0700-1600", title = "London Session (UTC)")
+
+// ──────────────────────────────────────────────────────────────
+// SESSION FILTER
+// ──────────────────────────────────────────────────────────────
+in_session = not na(time(timeframe.period, session_time + ":1234567", "UTC"))
+
+// ──────────────────────────────────────────────────────────────
+// ONE-TRADE-PER-DAY GUARD
+// ──────────────────────────────────────────────────────────────
+var int last_trade_day = na
+can_trade_today = na(last_trade_day) or last_trade_day != dayofmonth(time)
+
+// ──────────────────────────────────────────────────────────────
+// INDICATORS
+// ──────────────────────────────────────────────────────────────
+// Bollinger Bands
+basis = ta.sma(close, bb_length)
+dev   = bb_mult * ta.stdev(close, bb_length)
+upper = basis + dev
+lower = basis - dev
+
+// 200 EMA trend filter
+ema200 = ta.ema(close, ema_length)
+
+// RSI momentum filter
+rsi_val = ta.rsi(close, rsi_length)
+
+// ──────────────────────────────────────────────────────────────
+// PLOTS
+// ──────────────────────────────────────────────────────────────
+plot(basis,  "BB Middle (TP target)", color = color.orange, linewidth = 1)
+plot(upper,  "BB Upper",              color = color.blue,   linewidth = 1)
+plot(lower,  "BB Lower",              color = color.blue,   linewidth = 1)
+plot(ema200, "200 EMA",               color = color.purple, linewidth = 2)
+
+// ──────────────────────────────────────────────────────────────
+// ENTRY CONDITIONS
+// ──────────────────────────────────────────────────────────────
+// Long: price closes below lower band AND above 200 EMA (uptrend)
+//       AND RSI crosses back above oversold level (exhaustion confirmed)
+long_setup  = close < lower and close > ema200 and ta.crossover(rsi_val, rsi_os)
+long_entry  = long_setup and in_session and can_trade_today and strategy.position_size == 0
+
+// Short: price closes above upper band AND below 200 EMA (downtrend)
+//        AND RSI crosses back below overbought level (exhaustion confirmed)
+short_setup = close > upper and close < ema200 and ta.crossunder(rsi_val, rsi_ob)
+short_entry = short_setup and in_session and can_trade_today and strategy.position_size == 0
+
+// ──────────────────────────────────────────────────────────────
+// EXECUTE ENTRIES
+// ──────────────────────────────────────────────────────────────
+if long_entry
+    strategy.entry("Long", strategy.long)
+    last_trade_day := dayofmonth(time)
+
+if short_entry
+    strategy.entry("Short", strategy.short)
+    last_trade_day := dayofmonth(time)
+
+// ──────────────────────────────────────────────────────────────
+// EXIT LOGIC
+// ──────────────────────────────────────────────────────────────
+// Stop-loss: fixed 10.0 pips  (10 ticks = 1 pip on 5-digit brokers)
+ticks_in_pip = 10
+sl_ticks     = sl_pips * ticks_in_pip
+
+// Take-profit: dynamic — target the Middle Bollinger Band (20 SMA).
+// Using limit orders placed at the current 'basis' value.
+// Because 'basis' changes each bar, we use strategy.exit with a
+// 'limit' parameter recalculated on every bar when we are in a trade.
+
+if strategy.position_size > 0   // we are long
+    strategy.exit("Exit Long",  from_entry = "Long",  limit = basis, loss = sl_ticks)
+
+if strategy.position_size < 0   // we are short
+    strategy.exit("Exit Short", from_entry = "Short", limit = basis, loss = sl_ticks)
+
+// ──────────────────────────────────────────────────────────────
+// SESSION-END CLOSE
+// ──────────────────────────────────────────────────────────────
+// Close all open positions when the London session ends to avoid
+// holding trades in low-liquidity hours.
+if not in_session and strategy.position_size != 0
+    strategy.close_all(comment = "Session End Close")
